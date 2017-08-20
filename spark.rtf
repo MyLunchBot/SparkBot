@@ -1,0 +1,146 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red26\green26\blue26;\red255\green255\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c13333\c13333\c13333;\cssrgb\c100000\c100000\c100000;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs25\fsmilli12800 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 //\
+// Copyright (c) 2016 Cisco Systems\
+// Licensed under the MIT License\'a0\
+//\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 /*\'a0\
+\'a0* a Cisco Spark bot that:\
+\'a0* \'a0 - sends a welcome message as he joins a room,\'a0\
+\'a0* \'a0 - answers to a /hello command, and greets the user that chatted him\
+\'a0* \'a0 - supports /help and a fallback helper message\
+\'a0*\
+\'a0* + leverages the "node-sparkclient" library for Bot to Cisco Spark communications.\
+\'a0*\'a0\
+\'a0*/\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 var SparkBot = require("node-sparkbot");\
+var bot = new SparkBot();\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 //bot.interpreter.prefix = "#"; // Remove comment to overlad default / prefix to identify bot commands\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 var SparkAPIWrapper = require("node-sparkclient");\
+if (!process.env.SPARK_TOKEN) \{\
+\'a0 \'a0 console.log("Could not start as this bot requires a Cisco Spark API access token.");\
+\'a0 \'a0 console.log("Please add env variable SPARK_TOKEN on the command line");\
+\'a0 \'a0 console.log("Example: ");\
+\'a0 \'a0 console.log("> SPARK_TOKEN=XXXXXXXXXXXX DEBUG=sparkbot* node helloworld.js");\
+\'a0 \'a0 process.exit(1);\
+\}\
+var spark = new SparkAPIWrapper(process.env.SPARK_TOKEN);\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 //\
+// Help and fallback commands\
+//\
+bot.onCommand("help", function (command) \{\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "Hi, I am the Hello World bot !\\n\\nType /hello to see me in action.", \{ "markdown":true \}, function(err, message) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \});\
+\});\
+bot.onCommand("fallback", function (command) \{\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "Sorry, I did not understand.\\n\\nTry /help.", \{ "markdown":true \}, function(err, response) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post Fallback message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \});\
+\});\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 //\
+// Bots commands here\
+//\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 bot.onCommand("my"+"lunch" , function (command) \{\
+\'a0 \'a0 var email = command.message.personEmail; // Spark User that created the message orginally\'a0\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "<@personEmail:" + email + ">" + "It looks like you are availbale at 2. I have ordered Chipotle since it is\'a0Wednesday. Sound good?", \{ "markdown":true \}, function(err, message) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post Hello message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \});\
+\});\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 bot.onCommand("nevermind" , function (command) \{\
+\'a0 \'a0 var email = command.message.personEmail; // Spark User that created the message orginally\'a0\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "<@personEmail:" + email + ">" + "Aw shucks. Let's try again\'a0tomorrow.", \{ "markdown":true \}, function(err, message) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post Hello message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \});\
+\});\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 bot.onCommand("perfect" , function (command) \{\
+\'a0 \'a0 var email = command.message.personEmail; // Spark User that created the message orginally\'a0\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "<@personEmail:" + email + ">" + "Great I'll get to cooking! Your food will be delivered at\'a02pm.", \{ "markdown":true \}, function(err, message) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post Hello message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \});\
+\});\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 bot.onCommand("maybe" , function (command) \{\
+\'a0 \'a0 var email = command.message.personEmail; // Spark User that created the message orginally\'a0\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "<@personEmail:" + email + ">" + "Not convinced? How about Jimmy John's?", \{ "markdown":true \}, function(err, message) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post Hello message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \});\
+\});\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \cb3 bot.onCommand("Thanks" \'a0, function (command) \{\
+\'a0 \'a0 var email = command.message.personEmail; // Spark User that created the message orginally\'a0\
+\'a0 \'a0 spark.createMessage(command.message.roomId, "<@personEmail:" + email + ">" + "No biggie, that's why I'm here!", \{ "markdown":true \}, function(err, message) \{\
+\'a0 \'a0 \'a0 \'a0 if (err) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 console.log("WARNING: could not post Hello message to room: " + command.message.roomId);\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \});\
+\});\
+}
